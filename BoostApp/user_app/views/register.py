@@ -9,8 +9,8 @@ from ..validation import UserAppValidation
 from ..serializers import RegisterationSerializer
 
 from django.conf import settings
-from helper_files.cryptography import AESCipher
-from helper_files.status_code import Status_code
+from ...helper_files.cryptography import AESCipher
+from ...helper_files.status_code import Status_code
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
@@ -33,7 +33,7 @@ def registeration_view(request):
         # we override the save method and it returns an account now
         account = serializer.save(serializer.validated_data)
 
-        data['response'] = "Registeration Successful"
+        data['response'] = "Registration Successful"
         data['id'] = aes.encrypt(str(account.id))
         data['username'] = account.username
         data['email'] = account.email

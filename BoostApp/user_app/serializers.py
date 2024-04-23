@@ -31,24 +31,12 @@ class RegisterationSerializer(serializers.ModelSerializer):
     
     
     def save(self,validated_data):
-        # print("VALID "+str(validated_data))
-        # if validated_data['password_confirm'] != validated_data['password']:
-        #     raise serializers.ValidationError({'message':'password does not match the password_confirm',
-        #                                        'status':status.HTTP_400_BAD_REQUEST})
-
-        # if User.objects.filter(email=validated_data['email']).exists():
-        #     raise serializers.ValidationError({'message':'email already exists',
-        #                                        'status':status.HTTP_400_BAD_REQUEST})
-            
-        # if User.objects.filter(username=validated_data['username']).exists():
-        #     raise serializers.ValidationError({'message':'username already exists',
-        #                                        'status':status.HTTP_400_BAD_REQUEST})        
-        
         
         account=User(email=validated_data['email'],username=validated_data['username'],
                      is_staff=validated_data['is_staff'],first_name=validated_data['first_name'],
                      last_name=validated_data['last_name'],
                      is_superuser=validated_data['is_superuser'],)
+
         account.set_password(validated_data['password'])
         account.save()
         
