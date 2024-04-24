@@ -9,14 +9,14 @@ from ..validation import UserAppValidation
 from ..serializers import RegisterationSerializer
 
 from django.conf import settings
-from ...helper_files.cryptography import AESCipher
-from ...helper_files.status_code import Status_code
+from helper_files.cryptography import AESCipher
+from helper_files.status_code import Status_code
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
 
 @api_view(['Post',])
-def registeration_view(request):
+def registration_view(request):
 
     if request.method == 'POST':
         serializer = RegisterationSerializer(data=request.data)

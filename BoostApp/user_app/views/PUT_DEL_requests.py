@@ -5,9 +5,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from ..serializers import UserSerializer
-from ...helper_files.permissions import AdminOrManager, Permissions
-from ...helper_files.cryptography import AESCipher
-from ...helper_files.status_code import Status_code
+from helper_files.permissions import AdminOrManager, Permissions
+from helper_files.cryptography import AESCipher
+from helper_files.status_code import Status_code
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
