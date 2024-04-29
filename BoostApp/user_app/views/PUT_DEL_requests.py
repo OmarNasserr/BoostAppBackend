@@ -39,22 +39,21 @@ class UserDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        print(instance)
-        if str(type(instance)) != "<class 'django.contrib.auth.models.User'>":
+        if not isinstance(instance,BUser):
             return Response(data={"message": "User wasn't found.",
                                   "status": Status_code.no_content}, status=Status_code.no_content)
         return super().update(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
-        if str(type(instance)) != "<class 'django.contrib.auth.models.User'>":
+        if not isinstance(instance,BUser):
             return Response(data={"message": "User wasn't found.",
                                   "status": Status_code.no_content}, status=Status_code.no_content)
         return self.retrieve(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
-        if str(type(instance)) != "<class 'django.contrib.auth.models.User'>":
+        if not isinstance(instance,BUser):
             return Response(data={"message": "User wasn't found.",
                                   "status": Status_code.no_content}, status=Status_code.no_content)
         super().delete(request, *args, **kwargs)
