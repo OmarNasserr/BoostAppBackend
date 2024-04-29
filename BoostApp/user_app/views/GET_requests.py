@@ -3,13 +3,13 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from ..serializers import UserSerializer
-from django.contrib.auth.models import User
+from ..models import BUser
 from ..pagination import UsersPagination
 
 
 class UsersList(generics.ListAPIView):
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+    queryset = BUser.objects.all()
     
     pagination_class=UsersPagination  
 

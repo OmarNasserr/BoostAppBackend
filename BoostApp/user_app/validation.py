@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User
+from .models import BUser
 import re
 from helper_files.status_code import Status_code
 
@@ -16,12 +16,12 @@ class UserAppValidation():
                                       'status':Status_code.bad_request},
                                 status=Status_code.bad_request)
 
-            if User.objects.filter(email=data['email']).exists():
+            if BUser.objects.filter(email=data['email']).exists():
                 return Response(data={'message': "this email already exists.",
                                       'status':Status_code.bad_request},
                                 status=Status_code.bad_request)
             
-            if User.objects.filter(username=data['username']).exists():
+            if BUser.objects.filter(username=data['username']).exists():
                 return Response(data={'message': "this user already exists.",
                                       'status':Status_code.bad_request},
                                 status=Status_code.bad_request)

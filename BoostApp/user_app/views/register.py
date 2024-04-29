@@ -33,7 +33,7 @@ def registration_view(request):
         # we override the save method and it returns an account now
         account = serializer.save(serializer.validated_data)
 
-        data['response'] = "Registration Successful"
+        data['message'] = "Registration Successful"
         data['id'] = aes.encrypt(str(account.id))
         data['username'] = account.username
         data['email'] = account.email
