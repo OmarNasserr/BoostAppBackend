@@ -38,10 +38,12 @@ INSTALLED_APPS = [
 
     # plugins
     'drf_yasg',
+    'django_cleanup.apps.CleanupConfig',
 
     # apps
     'helper_files',
     'user_app',
+    'games_app',
 ]
 
 MIDDLEWARE = [
