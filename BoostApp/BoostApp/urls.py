@@ -26,9 +26,6 @@ schema_view = get_schema_view(
         title="API",
         default_version=f"v{settings.API_VERSION}",
         description=" ",
-        # terms_of_service="https://www.example.com/terms/",
-        # contact=openapi.Contact(email="contact@example.com"),
-        # license=openapi.License(name="Awesome License"),
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
@@ -37,6 +34,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(f"api/v{settings.API_VERSION}/user/", include("user_app.urls")),
+    path(f"api/v{settings.API_VERSION}/games/", include("games_app.urls")),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
