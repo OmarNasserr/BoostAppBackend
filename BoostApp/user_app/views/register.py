@@ -40,7 +40,7 @@ def registration_view(request):
 
         # JWT token
         refresh = RefreshToken.for_user(account)
-        data['toekn'] = {
+        data['token'] = {
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         }
