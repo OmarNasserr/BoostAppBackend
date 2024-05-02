@@ -6,7 +6,7 @@ class AdminOnly(permissions.IsAdminUser):
 
     def has_permission(self, request, view):
         admin_permission = bool(request.user.is_superuser)
-        return request.method == "POST" and admin_permission
+        return request.method in ["POST","PATCH","GET","PUT","DELETE"] and admin_permission
 
 
 class AdminOrManager(permissions.IsAdminUser):
