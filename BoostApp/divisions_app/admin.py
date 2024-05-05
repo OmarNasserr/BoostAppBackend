@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import Game,GameImage
+from .models import Division,DivisionImage
 # Register your models here.
 
-admin.site.register(Game)
-admin.site.register(GameImage)
+admin.site.register(Division)
+admin.site.register(DivisionImage)

@@ -22,41 +22,50 @@ class DivisionIconSerializer(serializers.ModelSerializer):
         )
 
 
-class GameSerializer(serializers.ModelSerializer):
-    division_icon = DivisionIconSerializer(many=False, read_only=True)
+class DivisionSerializer(serializers.ModelSerializer):
+    division_icon = DivisionIconSerializer(many=True, read_only=True)
 
     uploaded_icon = serializers.ListField(
         child=serializers.ImageField(max_length=1000000, use_url=False),
         write_only=True,
+        required=False
     )
 
     class Meta:
         model = Division
         exclude = ('created_at', 'updated_at',)
 
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('name', 'game_id'),
+                message="This division already exists in this game."
+            )
+        ]
+
     def create(self, validated_data):
         uploaded_icon = validated_data.pop('uploaded_icon')
-        game = Division.objects.create(**validated_data)
+        division = Division.objects.create(**validated_data)
 
         for image in uploaded_icon:
-            DivisionImage.objects.create(game=game, image=image)
+            DivisionImage.objects.create(division=division, image=image)
             break
 
-        return game
+        return division
 
     def update(self, instance, validated_data):
-        uploaded_images = validated_data.pop('uploaded_images')
+        if 'uploaded_icon' in validated_data:
+            uploaded_icon = validated_data.pop('uploaded_icon')
 
 
-        division_icon = DivisionImage.objects.filter(game=instance)
-        print("DIVISION ICON FILTER ",division_icon)
-        for image in uploaded_images:
-            division_icon.update(image=image)
-            # DivisionImage.objects.create(game=instance, image=image)
-            break
+            division_icon = DivisionImage.objects.filter(division=instance)
+            for image in uploaded_icon:
+                division_icon.update(image=image)
+                # DivisionImage.objects.create(division=instance, image=image)
+                break
 
-        instance.updated_at = str(datetime.now().strftime("%d %b, %Y - %Ih%Mm%S %p"))
         instance = super().update(instance, validated_data)
+        instance.updated_at = str(datetime.now().strftime("%d %b, %Y - %Ih%Mm%S %p"))
         return instance
 
     def is_valid(self, *, raise_exception=False):
@@ -66,5 +75,5 @@ class GameSerializer(serializers.ModelSerializer):
         return SerializerHelper.to_representation(
             self=self, instance=instance,
             fields_to_be_decrypted=[],
-            fields_to_be_encrypted=['id']
+            fields_to_be_encrypted=['id','game_id']
         )

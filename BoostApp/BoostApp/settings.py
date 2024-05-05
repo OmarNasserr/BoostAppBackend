@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'helper_files',
     'user_app',
     'games_app',
+    'divisions_app',
+
 ]
 
 MIDDLEWARE = [

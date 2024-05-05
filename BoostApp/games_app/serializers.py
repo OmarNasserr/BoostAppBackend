@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Game, GameImage
 from helper_files.serializer_helper import SerializerHelper
+from divisions_app.serializers import DivisionSerializer
 from helper_files.cryptography import AESCipher
 from datetime import datetime
 from django.conf import settings
@@ -24,6 +25,7 @@ class GameImageSerializer(serializers.ModelSerializer):
 
 class GameSerializer(serializers.ModelSerializer):
     pics_from_the_game = GameImageSerializer(many=True, read_only=True)
+    divisions = DivisionSerializer(many=True, read_only=True)
 
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(max_length=1000000, use_url=False),

@@ -2,18 +2,19 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-from ..models import Game
-from ..serializers import GameSerializer
+from ..models import Division
+from ..serializers import DivisionSerializer
 from helper_files.permissions import AdminOrManager, Permissions, AdminOnly
 from helper_files.cryptography import AESCipher
 from helper_files.status_code import Status_code
+from ..validations import DivisionAppValidations
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
 
-class GameDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = GameSerializer
-    queryset = Game.objects.all()
+class DivisionDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = DivisionSerializer
+    queryset = Division.objects.all()
 
     permission_classes = [AdminOnly]
 
@@ -25,12 +26,12 @@ class GameDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         try:
-            pk = aes.decrypt(str(self.kwargs['game_id']))
-            game = Game.objects.filter(pk=int(pk))
-            obj = game[0]
+            pk = aes.decrypt(str(self.kwargs['division_id']))
+            division = Division.objects.filter(pk=int(pk))
+            obj = division[0]
         except:
             return ValueError('wrong id format')
-        if game.count() == 0:
+        if division.count() == 0:
             return ValueError('wrong id format')
 
         self.check_object_permissions(self.request, obj)
@@ -38,23 +39,31 @@ class GameDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not isinstance(instance,Game):
-            return Response(data={"message": "Game wasn't found.",
+        if not isinstance(instance,Division):
+            return Response(data={"message": "Division wasn't found.",
                                   "status": Status_code.no_content}, status=Status_code.no_content)
-        return super().update(request, *args, **kwargs)
+        else:
+            partial = kwargs.pop('partial', False)
+            serializer = self.get_serializer(instance, data=request.data,partial=partial)
+            valid, err = serializer.is_valid(raise_exception=False)
+            response = DivisionAppValidations.validate_division_update(self.request.data, valid, err)
+            if response.status_code == Status_code.updated:
+                serializer.save()
+
+            return response
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not isinstance(instance,Game):
-            return Response(data={"message": "Game wasn't found.",
+        if not isinstance(instance,Division):
+            return Response(data={"message": "Division wasn't found.",
                                   "status": Status_code.no_content}, status=Status_code.no_content)
         return self.retrieve(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not isinstance(instance,Game):
-            return Response(data={"message": "Game wasn't found.",
+        if not isinstance(instance,Division):
+            return Response(data={"message": "Division wasn't found.",
                                   "status": Status_code.no_content}, status=Status_code.no_content)
         super().delete(request, *args, **kwargs)
-        return Response(data={"message": "Game was deleted successfully.",
+        return Response(data={"message": "Division was deleted successfully.",
                               "status": Status_code.no_content}, status=Status_code.no_content)

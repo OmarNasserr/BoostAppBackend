@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class GamesPagination(PageNumberPagination):
+class DivisionPagination(PageNumberPagination):
     page_size = 1
     page_query_param = 'page_number'  # defines the name of /?page_number=, default is page
     page_size_query_param = 'page_size'  # gives the user the ability to controll the number of

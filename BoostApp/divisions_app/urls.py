@@ -1,11 +1,10 @@
-from urllib import request
 from django.urls import path, include
-from .views.POST_requests import GameCreate
-from .views.GET_requests import GamesList
-from .views.PUT_DEL_requests import GameDetailUpdateDelete
+from .views.POST_requests import DivisionCreate
+from .views.GET_requests import DivisionsList
+from .views.PUT_DEL_requests import DivisionDetailUpdateDelete
 
 urlpatterns = [
-    path('create/', GameCreate.as_view(), name='game-create'),
-    path('list/', GamesList.as_view(), name='game-list'),
-    path('<path:game_id>/detail/', GameDetailUpdateDelete.as_view(), name='game-detail'),
+    path('create/', DivisionCreate.as_view(), name='division-create'),
+    path('list/', DivisionsList.as_view(), name='division-list'),
+    path('<path:division_id>/detail/', DivisionDetailUpdateDelete.as_view(), name='division-detail'),
 ]
