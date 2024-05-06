@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'user_app',
     'games_app',
     'divisions_app',
+    'boosting_request_app',
 
 ]
 
