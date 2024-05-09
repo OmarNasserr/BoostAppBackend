@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 class BoostingRequestAppValidations():
 
+    @staticmethod
     def validate_br_create(data, valid, err):
 
         if valid:
@@ -26,6 +27,7 @@ class BoostingRequestAppValidations():
             return Response(data={'message': str(err), "status": Status_code.bad_request},
                             status=Status_code.bad_request)
 
+    @staticmethod
     def validate_br_update(data, valid, err):
         if valid:
             # if len(data['name']) < 2:
@@ -43,3 +45,11 @@ class BoostingRequestAppValidations():
         else:
             return Response(data={'message': str(err), "status": Status_code.bad_request},
                             status=Status_code.bad_request)
+
+class CalculatePriceValidation():
+
+    @staticmethod
+    def validate_calculate_price(data):
+        return Response(data={"message": "Ok.",
+                                      'status': Status_code.success},
+                                status=Status_code.success)
