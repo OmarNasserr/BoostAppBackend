@@ -3,13 +3,13 @@ from datetime import datetime
 from django.db import models
 from games_app.models import Game
 
-# Create your models here.
-
 
 class Division(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True, )
     game_id = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='divisions')
+    previous_division = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    price = models.DecimalField(default=1.0, decimal_places=2)
     created_at = models.CharField(default=str(datetime.now().strftime(
         "%d %b, %Y - %Ih%Mm%S %p")), max_length=100)
     updated_at = models.CharField(default=str(datetime.now().strftime(
@@ -19,10 +19,10 @@ class Division(models.Model):
         return self.name
 
 
-
 def divisions_icons_location(instance, filename):
     upload_path = f'media/game_images/{instance.division.game_id.name}/divisions_icons/{instance.division.name}'
-    return os.path.join(upload_path,filename)
+    return os.path.join(upload_path, filename)
+
 
 class DivisionImage(models.Model):
     division = models.ForeignKey(Division, on_delete=models.CASCADE, related_name='division_icon')

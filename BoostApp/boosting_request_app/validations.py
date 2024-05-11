@@ -2,7 +2,11 @@ from rest_framework.response import Response
 from rest_framework import status
 import re
 from helper_files.status_code import Status_code
-from django.contrib.auth.models import User
+from helper_files.cryptography import AESCipher
+from helper_files.status_code import Status_code
+from django.conf import settings
+
+aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
 
 class BoostingRequestAppValidations():
@@ -20,9 +24,9 @@ class BoostingRequestAppValidations():
             #                           'status': Status_code.bad_request},
             #                     status=Status_code.bad_request)
             # else:
-                return Response(data={"message": "Boosting Request was added successfully.",
-                                      'status': Status_code.created},
-                                status=Status_code.created)
+            return Response(data={"message": "Boosting Request was added successfully.",
+                                  'status': Status_code.created},
+                            status=Status_code.created)
         else:
             return Response(data={'message': str(err), "status": Status_code.bad_request},
                             status=Status_code.bad_request)
@@ -39,17 +43,22 @@ class BoostingRequestAppValidations():
             #                           'status': Status_code.bad_request},
             #                     status=Status_code.bad_request)
             # else:
-                return Response(data={"message": "Boosting Request was updated successfully.",
-                                      'status': Status_code.created},
-                                status=Status_code.created)
+            return Response(data={"message": "Boosting Request was updated successfully.",
+                                  'status': Status_code.created},
+                            status=Status_code.created)
         else:
             return Response(data={'message': str(err), "status": Status_code.bad_request},
                             status=Status_code.bad_request)
+
 
 class CalculatePriceValidation():
 
     @staticmethod
     def validate_calculate_price(data):
+        if aes.decrypt(data['current_division_id']) == aes.decrypt(data['desired_division_id']):
+            return Response(data={'message': "The current division must be different from the desired division",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
         return Response(data={"message": "Ok.",
-                                      'status': Status_code.success},
-                                status=Status_code.success)
+                              'status': Status_code.success},
+                        status=Status_code.success)
