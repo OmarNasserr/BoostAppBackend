@@ -55,7 +55,7 @@ class CalculatePriceValidation():
 
     @staticmethod
     def validate_calculate_price(data):
-        if aes.decrypt(data['current_division_id']) == aes.decrypt(data['desired_division_id']):
+        if aes.decrypt(data['current_division_id']) == data['desired_division_id']:
             return Response(data={'message': "The current division must be different from the desired division",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
