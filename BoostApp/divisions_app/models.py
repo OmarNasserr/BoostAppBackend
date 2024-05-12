@@ -10,6 +10,7 @@ class Division(models.Model):
     game_id = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='divisions')
     previous_division = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     price = models.DecimalField(default=1.0, decimal_places=2, max_digits=9)
+    rank = models.IntegerField(blank=False , null=False)
     created_at = models.CharField(default=str(datetime.now().strftime(
         "%d %b, %Y - %Ih%Mm%S %p")), max_length=100)
     updated_at = models.CharField(default=str(datetime.now().strftime(

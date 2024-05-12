@@ -12,7 +12,7 @@ aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
 
 @api_view(['Post',])
-def calculate_price(request):
+def confirm_boosting_request(request):
     if request.method == 'POST':
 
         response = CalculatePriceValidation.validate_calculate_price(request.data)
@@ -20,10 +20,12 @@ def calculate_price(request):
         if response.status_code == Status_code.bad_request:
             return response
 
-        current_div = response.data['current_div']
-        desired_div = response.data['desired_div']
-
         data = {}
+        request.data._mutable = True
+        request.data['boosting_request_id'] = aes.decrypt(request.data['boosting_request_id'])
+
+        current_div = Division.objects.get(id=request.data['current_division_id'])
+        desired_div = Division.objects.get(id=request.data['desired_division_id'])
 
         price = 0
         while current_div.id != desired_div.id:
