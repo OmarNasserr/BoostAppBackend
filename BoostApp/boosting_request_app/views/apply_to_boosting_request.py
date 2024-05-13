@@ -12,7 +12,7 @@ aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
 
 @api_view(['Post',])
-def confirm_boosting_request(request):
+def apply_to_boosting_request(request):
     if request.method == 'POST':
 
         response = CalculatePriceValidation.validate_calculate_price(request.data)
