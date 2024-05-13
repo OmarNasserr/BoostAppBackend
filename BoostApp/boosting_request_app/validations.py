@@ -13,6 +13,55 @@ aes = AESCipher(settings.SECRET_KEY[:16], 32)
 class BoostingRequestAppValidations:
 
     @staticmethod
+    def validate_br_get(kwargs):
+
+        if 'player_id' not in kwargs:
+            try:
+                kwargs['player_id'] = aes.decrypt(str(kwargs['player_id']))
+            except:
+                return Response(data={'message': "Wrong id format for player_id",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+
+        if 'booster_id' not in kwargs:
+            try:
+                kwargs['booster_id'] = aes.decrypt(str(kwargs['booster_id']))
+            except:
+                return Response(data={'message': "Wrong id format for booster_id",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+
+        if 'game_id' not in kwargs:
+            try:
+                kwargs['game_id'] = aes.decrypt(str(kwargs['game_id']))
+            except:
+                return Response(data={'message': "Wrong id format for game_id",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+
+        if 'current_division_id' not in kwargs:
+            try:
+                kwargs['current_division_id'] = aes.decrypt(str(kwargs['current_division_id']))
+            except:
+                return Response(data={'message': "Wrong id format for current_division_id",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+
+        if 'desired_division_id' not in kwargs:
+            try:
+                kwargs['desired_division_id'] = aes.decrypt(str(kwargs['desired_division_id']))
+            except:
+                return Response(data={'message': "Wrong id format for desired_division_id",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+
+        return Response(data={"message": "Success.",
+                              "kwargs": kwargs,
+                              'status': Status_code.success,
+                              },
+                        status=Status_code.success)
+
+    @staticmethod
     def validate_br_create(data, valid, err):
 
         if valid:
