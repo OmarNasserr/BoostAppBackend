@@ -97,6 +97,10 @@ class CalculatePriceValidation:
             return Response(data={'message': "No divisions found with the given ids.",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
+        if current_div.rank > desired_div.rank:
+            return Response(data={'message': "Cannot boost to a division with a lower rank than your current division.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
         if aes.decrypt(data['current_division_id']) == aes.decrypt(data['desired_division_id']):
             return Response(data={'message': "The current division must be different from the desired division",
                                   'status': Status_code.bad_request},

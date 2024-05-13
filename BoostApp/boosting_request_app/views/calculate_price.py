@@ -18,6 +18,7 @@ def calculate_price(request):
         response = CalculatePriceValidation.validate_calculate_price(request.data)
 
         if response.status_code == Status_code.bad_request:
+            response.data['price']='0$'
             return response
 
         current_div = response.data['current_div']
