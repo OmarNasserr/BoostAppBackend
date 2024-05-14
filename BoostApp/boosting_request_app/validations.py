@@ -6,6 +6,7 @@ from helper_files.cryptography import AESCipher
 from helper_files.status_code import Status_code
 from divisions_app.models import Division
 from django.conf import settings
+from .helper import BoostingRequestHelper
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
@@ -15,45 +16,15 @@ class BoostingRequestAppValidations:
     @staticmethod
     def validate_br_get(kwargs):
 
-        if 'player_id' not in kwargs:
-            try:
-                kwargs['player_id'] = aes.decrypt(str(kwargs['player_id']))
-            except:
-                return Response(data={'message': "Wrong id format for player_id",
-                                      'status': Status_code.bad_request},
-                                status=Status_code.bad_request)
-
-        if 'booster_id' not in kwargs:
-            try:
-                kwargs['booster_id'] = aes.decrypt(str(kwargs['booster_id']))
-            except:
-                return Response(data={'message': "Wrong id format for booster_id",
-                                      'status': Status_code.bad_request},
-                                status=Status_code.bad_request)
-
-        if 'game_id' not in kwargs:
-            try:
-                kwargs['game_id'] = aes.decrypt(str(kwargs['game_id']))
-            except:
-                return Response(data={'message': "Wrong id format for game_id",
-                                      'status': Status_code.bad_request},
-                                status=Status_code.bad_request)
-
-        if 'current_division_id' not in kwargs:
-            try:
-                kwargs['current_division_id'] = aes.decrypt(str(kwargs['current_division_id']))
-            except:
-                return Response(data={'message': "Wrong id format for current_division_id",
-                                      'status': Status_code.bad_request},
-                                status=Status_code.bad_request)
-
-        if 'desired_division_id' not in kwargs:
-            try:
-                kwargs['desired_division_id'] = aes.decrypt(str(kwargs['desired_division_id']))
-            except:
-                return Response(data={'message': "Wrong id format for desired_division_id",
-                                      'status': Status_code.bad_request},
-                                status=Status_code.bad_request)
+        for key in kwargs:
+            keys = ['player_id', 'booster_id', 'game_id', 'current_division_id', 'desired_division_id', ]
+            if key in keys:
+                try:
+                    kwargs[key] = aes.decrypt(str(kwargs[key]))
+                except:
+                    return Response(data={'message': "Wrong id format for " + key,
+                                          'status': Status_code.bad_request},
+                                    status=Status_code.bad_request)
 
         return Response(data={"message": "Success.",
                               "kwargs": kwargs,
@@ -62,18 +33,35 @@ class BoostingRequestAppValidations:
                         status=Status_code.success)
 
     @staticmethod
-    def validate_br_create(data, valid, err):
+    def decrypt_ids_in_request(data):
+        for key in data:
+            keys = ['player_id', 'booster_id', 'game_id', 'current_division_id', 'desired_division_id', ]
+            if key in keys:
+                try:
+                    data[key] = aes.decrypt(str(data[key]))
+                except:
+                    return Response(data={'message': "Wrong id format for " + key,
+                                          'status': Status_code.bad_request},
+                                    status=Status_code.bad_request)
 
+        return Response(data={"message": "Success.",
+                              "data": data,
+                              'status': Status_code.success,
+                              },
+                        status=Status_code.success)
+
+    @staticmethod
+    def validate_br_create(data, valid, err):
         if valid:
-            # if len(data['name']) < 2:
-            #     return Response(data={'message': "Boosting Request's name can't be less than two characters",
-            #                           'status': Status_code.bad_request},
-            #                     status=Status_code.bad_request)
-            # if len(data['name']) > 30:
-            #     return Response(data={'message': "Boosting Request's name can't be more than 20 characters",
-            #                           'status': Status_code.bad_request},
-            #                     status=Status_code.bad_request)
-            # else:
+            if 'current_division_id' in data and 'desired_division_id' in data:
+                current_div = Division.objects.get(id=data['current_division_id'])
+                desired_div = Division.objects.get(id=data['desired_division_id'])
+                price = BoostingRequestHelper.get_price(current_div, desired_div)
+                if round(float(data['payment_amount']), 1) != round(price, 1):
+                    return Response(data={
+                        'message': f"Price is not equal to payment amount, payment_amount should be {round(price, 1)}",
+                        'status': Status_code.bad_request},
+                                    status=Status_code.bad_request)
             return Response(data={"message": "Boosting Request was added successfully.",
                                   'status': Status_code.created},
                             status=Status_code.created)

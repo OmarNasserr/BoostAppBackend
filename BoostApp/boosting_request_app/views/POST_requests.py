@@ -12,9 +12,11 @@ from django.conf import settings
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
+
 class BoostingRequestCreate(generics.CreateAPIView):
     queryset = BoostingRequest.objects.all()
     serializer_class = BoostingRequestSerializer
+
     # permission_classes = [AdminOnly]
 
     def permission_denied(self, request, message=None, code=None):
@@ -25,14 +27,9 @@ class BoostingRequestCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
-        if 'player_id' in request.data:
-            request.data['player_id'] = aes.decrypt(str(request.data['player_id']))
-        if 'game_id' in request.data:
-            request.data['game_id'] = aes.decrypt(str(request.data['game_id']))
-        if 'current_division_id' in request.data:
-            request.data['current_division_id'] = aes.decrypt(str(request.data['current_division_id']))
-        if 'desired_division_id' in request.data:
-            request.data['desired_division_id'] = aes.decrypt(str(request.data['desired_division_id']))
+        decrypt_ids_response = BoostingRequestAppValidations.decrypt_ids_in_request(request.data)
+        if decrypt_ids_response.status_code != Status_code.success:
+            return decrypt_ids_response
         serializer = self.get_serializer(data=request.data)
         valid, err = serializer.is_valid(raise_exception=False)
         response = BoostingRequestAppValidations.validate_br_create(self.request.data, valid, err)
