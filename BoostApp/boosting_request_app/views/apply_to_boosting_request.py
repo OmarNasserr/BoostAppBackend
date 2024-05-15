@@ -1,8 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 
-from ..validations import CalculatePriceValidation
+from ..validations import CalculatePriceValidation, ApplyToBoostingRequestValidation
 from django.conf import settings
 from helper_files.cryptography import AESCipher
 from helper_files.status_code import Status_code
@@ -15,29 +14,20 @@ aes = AESCipher(settings.SECRET_KEY[:16], 32)
 def apply_to_boosting_request(request):
     if request.method == 'POST':
 
-        response = CalculatePriceValidation.validate_calculate_price(request.data)
+        response = ApplyToBoostingRequestValidation.validate_apply_to_boosting_request(request.data)
 
         if response.status_code == Status_code.bad_request:
             return response
 
         data = {}
         request.data._mutable = True
-        request.data['boosting_request_id'] = aes.decrypt(request.data['boosting_request_id'])
+        boosting_request = response.data['boosting_request']
+        booster = response.data['booster']
 
-        current_div = Division.objects.get(id=request.data['current_division_id'])
-        desired_div = Division.objects.get(id=request.data['desired_division_id'])
-
-        price = 0
-        while current_div.id != desired_div.id:
-            price += desired_div.price
-            if desired_div.previous_division:
-                desired_div = Division.objects.get(id=desired_div.previous_division.id)
-            else:
-                break
-
+        boosting_request.update({'booster_id': response.data['']})
 
         data['message'] = "Price was calculated successfully."
-        data['price'] = f"{price}$"
+        # data['price'] = f"{price}$"
         data['status'] = Status_code.success
 
 

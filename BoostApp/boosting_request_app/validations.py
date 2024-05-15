@@ -7,6 +7,8 @@ from helper_files.status_code import Status_code
 from divisions_app.models import Division
 from django.conf import settings
 from .helper import BoostingRequestHelper
+from .models import BoostingRequest
+from user_app.models import BUser
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
@@ -112,19 +114,22 @@ class CalculatePriceValidation:
 
     @staticmethod
     def validate_calculate_price(data):
-        if 'current_division_id' not in data:
-            return Response(data={'message': "current_division_id is a required field",
-                                  'status': Status_code.bad_request},
-                            status=Status_code.bad_request)
-        if 'desired_division_id' not in data:
-            return Response(data={'message': "desired_division_id is a required field",
+        required_fields = ['current_division_id', 'desired_division_id']
+        for field in required_fields:
+            if field not in data:
+                return Response(data={'message': f"{field} is a required field",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+        try:
+            current_division_id = int(aes.decrypt(data['current_division_id']))
+        except:
+            return Response(data={'message': "Wrong id format for current_division_id.",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
         try:
-            current_division_id = int(aes.decrypt(data['current_division_id']))
             desired_division_id = int(aes.decrypt(data['desired_division_id']))
         except:
-            return Response(data={'message': "Wrong id format.",
+            return Response(data={'message': "Wrong id format for desired_division_id.",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
         try:
@@ -146,5 +151,56 @@ class CalculatePriceValidation:
                               'status': Status_code.success,
                               "current_div": current_div,
                               "desired_div": desired_div,
+                              },
+                        status=Status_code.success)
+
+
+class ApplyToBoostingRequestValidation:
+
+    @staticmethod
+    def validate_apply_to_boosting_request(data):
+        required_fields = ['boosting_request_id', 'booster_id']
+        for field in required_fields:
+            if field not in data:
+                return Response(data={'message': f"{field} is a required field",
+                                      'status': Status_code.bad_request},
+                                status=Status_code.bad_request)
+        try:
+            data['boosting_request_id'] = int(aes.decrypt(data['boosting_request_id']))
+        except:
+            return Response(data={'message': "Wrong id format for boosting_request_id.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
+        try:
+            data['booster_id'] = int(aes.decrypt(data['booster_id']))
+        except:
+            return Response(data={'message': "Wrong id format for booster_id.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
+        try:
+            boosting_req = BoostingRequest.objects.get(id=data['boosting_request_id'])
+        except:
+            return Response(data={'message': "Boosting Request wasn't found.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
+        try:
+            booster = BUser.objects.get(id=data['booster_id'])
+        except:
+            return Response(data={'message': "User wasn't found.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
+        if boosting_req.is_applied:
+            return Response(data={'message': "This Boosting Request was already applied to.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
+        if not booster.is_booster:
+            return Response(data={'message': "This user isn't a Booster.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
+
+        return Response(data={"message":"Applying to Boosting Request was done successfully",
+                              'boosting_request': boosting_req,
+                              'booster': booster,
+                              'status': Status_code.success
                               },
                         status=Status_code.success)
