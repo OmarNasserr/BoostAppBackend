@@ -80,6 +80,7 @@ class SerializerHelper():
                 elif field.field_name in fields_to_be_encrypted:
                     ret[field.field_name] = aes.encrypt(str(field.to_representation(attribute)))
                 else:
+                    ##
                     if isinstance(field, DateTimeField):
                         ret[field.field_name] = str(attribute.strftime(
                             "%d %b, %Y - %Ih%Mm%S %p"))
