@@ -2,6 +2,7 @@ from django.db import models
 from user_app.models import BUser
 from games_app.models import Game
 from divisions_app.models import Division
+from datetime import datetime
 
 
 class BoostingRequest(models.Model):
@@ -21,7 +22,7 @@ class BoostingRequest(models.Model):
     is_cancelled = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True,null=True)
 
     applied_at = models.DateTimeField(blank=True, null=True)
     completed_at = models.DateTimeField(blank=True, null=True)
