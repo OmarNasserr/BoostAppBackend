@@ -30,4 +30,4 @@ class BoostingRequestSerializer(serializers.ModelSerializer):
             self=self, instance=instance,
             fields_to_be_decrypted=[],
             fields_to_be_encrypted=['id', 'player_id', 'game_id', 'current_division_id', 'desired_division_id']
-        )
+        )##
