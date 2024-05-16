@@ -9,12 +9,13 @@ from django.conf import settings
 
 aes = AESCipher(settings.SECRET_KEY[:16], 32)
 
+
 class BoostingRequestSerializer(serializers.ModelSerializer):
     divisions = DivisionSerializer(many=True, read_only=True)
 
     class Meta:
         model = BoostingRequest
-        exclude = ('created_at', 'updated_at',)
+        exclude = ('created_at', 'updated_at', 'completed_at', 'cancelled_at')
 
     def update(self, instance, validated_data):
         instance.updated_at = str(datetime.now().strftime("%d %b, %Y - %Ih%Mm%S %p"))
@@ -28,5 +29,5 @@ class BoostingRequestSerializer(serializers.ModelSerializer):
         return SerializerHelper.to_representation(
             self=self, instance=instance,
             fields_to_be_decrypted=[],
-            fields_to_be_encrypted=['id','player_id','game_id','current_division_id','desired_division_id']
+            fields_to_be_encrypted=['id', 'player_id', 'game_id', 'current_division_id', 'desired_division_id']
         )
