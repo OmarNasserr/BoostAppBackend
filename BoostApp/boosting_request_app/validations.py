@@ -166,25 +166,29 @@ class ApplyToBoostingRequestValidation:
                                       'status': Status_code.bad_request},
                                 status=Status_code.bad_request)
         try:
-            data['boosting_request_id'] = int(aes.decrypt(data['boosting_request_id']))
+            boosting_request_id = int(aes.decrypt(data['boosting_request_id']))
         except:
             return Response(data={'message': "Wrong id format for boosting_request_id.",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
         try:
-            data['booster_id'] = int(aes.decrypt(data['booster_id']))
+            booster_id = int(aes.decrypt(data['booster_id']))
         except:
             return Response(data={'message': "Wrong id format for booster_id.",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
         try:
-            boosting_req = BoostingRequest.objects.get(id=data['boosting_request_id'])
+            boosting_req = BoostingRequest.objects.get(id=boosting_request_id)
         except:
             return Response(data={'message': "Boosting Request wasn't found.",
                                   'status': Status_code.bad_request},
                             status=Status_code.bad_request)
+        if boosting_req.is_applied:
+            return Response(data={'message': "This Boosting Request has already been applied to.",
+                                  'status': Status_code.bad_request},
+                            status=Status_code.bad_request)
         try:
-            booster = BUser.objects.get(id=data['booster_id'])
+            booster = BUser.objects.get(id=booster_id)
         except:
             return Response(data={'message': "User wasn't found.",
                                   'status': Status_code.bad_request},
