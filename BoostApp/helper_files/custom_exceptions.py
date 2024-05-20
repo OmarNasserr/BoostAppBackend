@@ -13,5 +13,16 @@ class NotAuthenticated(APIException):
     default_detail = {'message': 'Authentication credentials were not provided.',
                     'status': status.HTTP_401_UNAUTHORIZED,}
     default_code = 'not_authenticated'
+
+
+class CustomException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'A server error occurred.'
+    default_code = 'server_error'
+
+    def __init__(self, detail, status_code=None):
+        if status_code is not None:
+            self.status_code = status_code
+        self.detail = {'message': detail, 'status': self.status_code}
     
     
