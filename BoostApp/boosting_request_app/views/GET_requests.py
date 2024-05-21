@@ -21,10 +21,10 @@ class BoostingRequestList(generics.ListAPIView):
 
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = ['player_id', 'booster_id', 'game_id', 'current_division_id', 'desired_division_id',
-                        'is_confirmed', 'is_applied', 'is_completed', 'is_cancelled', 'is_cancelled',
+                        'is_confirmed', 'is_applied', 'is_completed', 'is_cancelled',
                         'payment_amount', 'updated_at', 'cancelled_at']
     search_fields = ['player_id', 'booster_id', 'game_id', 'current_division_id', 'desired_division_id',
-                     'is_confirmed', 'is_applied', 'is_completed', 'is_cancelled', 'is_cancelled',
+                     'is_confirmed', 'is_applied', 'is_completed', 'is_cancelled',
                      'payment_amount', 'updated_at', 'cancelled_at']
 
     def get(self, request, *args, **kwargs):
