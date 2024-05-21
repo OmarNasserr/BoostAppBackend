@@ -5,6 +5,7 @@ from games_app.models import Game
 
 
 class Division(models.Model):
+    parent_id = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='divisions')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True, )
     game_id = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='divisions')
