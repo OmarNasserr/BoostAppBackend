@@ -25,8 +25,10 @@ class DivisionCreate(generics.CreateAPIView):
         Permissions.check_object_permissions(self=self, request=request, obj=obj)
 
     def create(self, request, *args, **kwargs):
-        game_id = aes.decrypt(str(request.data['game_id']))
-        request.data['game_id'] = game_id
+        if 'game_id' in request.data:
+            request.data._mutable = True
+            game_id = aes.decrypt(str(request.data['game_id']))
+            request.data['game_id'] = game_id
         serializer = self.get_serializer(data=request.data)
         valid, err = serializer.is_valid(raise_exception=False)
         response = DivisionAppValidations.validate_division_create(self.request.data, valid, err)
