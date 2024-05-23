@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'divisions_app',
     'boosting_request_app',
     'reviews_app',
+    'content_management_app',
 
 ]
 
