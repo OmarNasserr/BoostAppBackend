@@ -3,6 +3,8 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Room, Message
+from rest_framework.response import Response
+from helper_files.status_code import Status_code
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -48,9 +50,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def user_has_access(self):
         try:
+            print('IN USER ACCESS??')
+            print('self.room_name ', self.room_name)
             room = Room.objects.get(name=self.room_name)
+            print('room ', room)
             return room.booster == self.user or room.player == self.user or self.user.is_superuser or self.user.is_staff
-        except Room.DoesNotExist:
+        except Exception as e:
             return False
 
     @database_sync_to_async

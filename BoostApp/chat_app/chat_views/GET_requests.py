@@ -1,7 +1,7 @@
 # views.py
 from rest_framework import generics, permissions
-from .models import Room, Message
-from .serializers import RoomSerializer, MessageSerializer
+from ..models import Room, Message
+from ..serializers import RoomSerializer, MessageSerializer
 
 class RoomListCreateView(generics.ListCreateAPIView):
     serializer_class = RoomSerializer
