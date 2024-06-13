@@ -39,6 +39,7 @@ urlpatterns = [
     path(f"api/v{settings.API_VERSION}/boosting_requests/", include("boosting_request_app.urls")),
     path(f"api/v{settings.API_VERSION}/reviews/", include("reviews_app.urls")),
     path(f"api/v{settings.API_VERSION}/chat/", include("chat_app.urls")),
+    path(f"api/v{settings.API_VERSION}/chat_info/", include("chat_app.http_urls")),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
