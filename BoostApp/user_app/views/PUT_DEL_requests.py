@@ -2,6 +2,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+
+from helper_files.custom_exceptions import CustomException
 from ..models import BUser
 from ..serializers import UserSerializer
 from helper_files.permissions import AdminOrManager, Permissions
@@ -28,14 +30,10 @@ class UserDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
             pk = aes.decrypt(str(self.kwargs['user_id']))
             user = BUser.objects.filter(pk=int(pk))
             obj = user[0]
-            print(obj)
+            self.check_object_permissions(self.request, obj)
+            return obj
         except:
-            return ValueError('wrong id format')
-        if user.count() == 0:
-            return ValueError('wrong id format')
-
-        self.check_object_permissions(self.request, obj)
-        return obj
+            raise CustomException(detail='No user was found for this ID.',status_code=Status_code.bad_request)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

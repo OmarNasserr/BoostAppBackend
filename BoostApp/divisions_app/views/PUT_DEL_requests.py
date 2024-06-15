@@ -2,6 +2,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+
+from helper_files.custom_exceptions import CustomException
 from ..models import Division
 from ..serializers import DivisionSerializer
 from helper_files.permissions import AdminOrManager, Permissions, AdminOnly
@@ -29,13 +31,10 @@ class DivisionDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
             pk = aes.decrypt(str(self.kwargs['division_id']))
             division = Division.objects.filter(pk=int(pk))
             obj = division[0]
+            self.check_object_permissions(self.request, obj)
+            return obj
         except:
-            return ValueError('wrong id format')
-        if division.count() == 0:
-            return ValueError('wrong id format')
-
-        self.check_object_permissions(self.request, obj)
-        return obj
+            raise CustomException(detail='No divisions were found for this ID.',status_code=Status_code.bad_request)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

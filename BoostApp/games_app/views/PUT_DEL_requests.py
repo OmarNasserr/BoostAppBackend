@@ -2,6 +2,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+
+from helper_files.custom_exceptions import CustomException
 from ..models import Game
 from ..serializers import GameSerializer
 from helper_files.permissions import AdminOrManager, Permissions, AdminOnly
@@ -28,13 +30,11 @@ class GameDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
             pk = aes.decrypt(str(self.kwargs['game_id']))
             game = Game.objects.filter(pk=int(pk))
             obj = game[0]
+            self.check_object_permissions(self.request, obj)
+            return obj
         except:
-            return ValueError('wrong id format')
-        if game.count() == 0:
-            return ValueError('wrong id format')
+            raise CustomException(detail='No games were found for this ID.',status_code=Status_code.no_content)
 
-        self.check_object_permissions(self.request, obj)
-        return obj
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
