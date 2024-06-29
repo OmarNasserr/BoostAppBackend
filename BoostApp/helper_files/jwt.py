@@ -34,8 +34,6 @@ class CustomTokenObtainPairSerializer(TokenObtainSerializer):
 
         self.user = authenticate(**authenticate_kwargs)
 
-        print('uz ', self.user)
-
         if not self.user:
             return {
                 'message': 'Login Failed',

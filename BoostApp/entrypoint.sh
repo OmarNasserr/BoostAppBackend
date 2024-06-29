@@ -17,4 +17,4 @@ python manage.py migrate
 
 # Start Gunicorn server
 echo "Starting Gunicorn"
-exec gunicorn BoostApp.wsgi:application --bind 0.0.0.0:$PORT
+exec gunicorn --reload --log-level debug --access-logfile - --error-logfile - BoostApp.wsgi:application --bind 0.0.0.0:$PORT
